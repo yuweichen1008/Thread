@@ -93,14 +93,14 @@ public class RecursiveThreadExecutor {
         return waitForNewTask(null);
     }
 
-    Task waitForNewTask(Task t) throws InterruptedException {
+    Task waitForNewTask(Task taskEnd) throws InterruptedException {
         synchronized (tasks) {
             waitingThreads++;
             try {
                 if (tasks.size() == 0) {
-                    if (t != null) {
-                        synchronized (t) {
-                            if (t.end)
+                    if (taskEnd != null) {
+                        synchronized (taskEnd) {
+                            if (taskEnd.end)
                                 return null;
                         }
                     }
