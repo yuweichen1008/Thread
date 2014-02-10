@@ -44,7 +44,7 @@ Threads utils
         }
     }
     
-# Example Recurcive Thread Pool
+# Example Recursive Thread Pool
 
     package com.github.axet.threads;
     
