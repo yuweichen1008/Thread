@@ -25,7 +25,7 @@ public class RecursiveThreadExecutor {
 
     class Job extends Thread {
         public Job() {
-            super("RecurciveThread" + threads.size());
+            super("RecursiveThread - " + threads.size());
         }
 
         @Override
@@ -49,6 +49,12 @@ public class RecursiveThreadExecutor {
 
     int waitingThreads = 0;
 
+    /**
+     * maxThread - limit max thread by number.
+     * 
+     * @param maxThreads
+     *            set max threads to 0 to run tasks on the current thread
+     */
     public RecursiveThreadExecutor(int maxThreads) {
         this.maxThreads = maxThreads;
     }
@@ -93,14 +99,14 @@ public class RecursiveThreadExecutor {
         return waitForNewTask(null);
     }
 
-    Task waitForNewTask(Task t) throws InterruptedException {
+    Task waitForNewTask(Task taskEnd) throws InterruptedException {
         synchronized (tasks) {
             waitingThreads++;
             try {
                 if (tasks.size() == 0) {
-                    if (t != null) {
-                        synchronized (t) {
-                            if (t.end)
+                    if (taskEnd != null) {
+                        synchronized (taskEnd) {
+                            if (taskEnd.end)
                                 return null;
                         }
                     }
@@ -136,6 +142,9 @@ public class RecursiveThreadExecutor {
     }
 
     boolean executeTaskFlag(Task t) throws InterruptedException {
+        if (Thread.currentThread().isInterrupted())
+            throw new InterruptedException();
+
         synchronized (t) {
             if (t.end)
                 return true;
