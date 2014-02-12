@@ -6,7 +6,7 @@ import java.util.List;
 public class RecursiveThreadExecutor {
 
     public static class Task implements Runnable {
-
+        Exception e;
         Runnable r;
 
         boolean start = false;
@@ -30,14 +30,20 @@ public class RecursiveThreadExecutor {
 
         @Override
         public void run() {
-            try {
-                while (true) {
-                    Task t = waitForNewTask();
+            while (true) {
+                Task t = null;
+                try {
+                    t = waitForNewTask();
                     if (t != null)
                         executeTaskFlag(t);
+                } catch (RuntimeException e) {
+                    if (t != null)
+                        t.e = e;
+                } catch (InterruptedException e) {
+                    if (t != null)
+                        t.e = e;
+                    return;
                 }
-            } catch (InterruptedException e) {
-                return;
             }
         }
 
@@ -66,11 +72,12 @@ public class RecursiveThreadExecutor {
     public void close() {
         synchronized (tasks) {
             maxThreads = 0;
+
+            for (Job j : threads) {
+                j.interrupt();
+            }
         }
 
-        for (Job j : threads) {
-            j.interrupt();
-        }
         for (Job j : threads) {
             try {
                 j.join();
@@ -163,14 +170,16 @@ public class RecursiveThreadExecutor {
             t.start = true;
         }
 
-        t.run();
+        try {
+            t.run();
+        } finally {
+            synchronized (t) {
+                t.end = true;
+            }
 
-        synchronized (t) {
-            t.end = true;
-        }
-
-        synchronized (tasks) {
-            tasks.notifyAll();
+            synchronized (tasks) {
+                tasks.notifyAll();
+            }
         }
 
         return true;

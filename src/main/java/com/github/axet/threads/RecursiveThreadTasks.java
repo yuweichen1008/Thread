@@ -23,6 +23,16 @@ public class RecursiveThreadTasks {
     public void waitTermination() throws InterruptedException {
         for (Task r : tasks) {
             es.waitTermination(r);
+
+            // we may lose some exception occured in next tasks
+            if (r.e != null) {
+                if (r.e instanceof InterruptedException)
+                    throw (InterruptedException) r.e;
+                else if (r.e instanceof RuntimeException)
+                    throw (RuntimeException) r.e;
+                else
+                    throw new RuntimeException(r.e);
+            }
         }
     }
 }
