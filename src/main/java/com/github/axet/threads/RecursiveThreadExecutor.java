@@ -21,6 +21,10 @@ public class RecursiveThreadExecutor {
             r.run();
         }
 
+        public boolean interrupted() {
+            return false;
+        }
+
     }
 
     class Job extends Thread {
@@ -162,6 +166,8 @@ public class RecursiveThreadExecutor {
             throw new InterruptedException();
 
         synchronized (t) {
+            if (t.interrupted())
+                return false;
             if (t.end)
                 return true;
             if (t.start) {
