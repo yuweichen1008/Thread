@@ -6,10 +6,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class RecursiveTerminationTest {
 
     // create 4 working threads. all tasks will be distributed between.
-    // cross instances, may run simulatinounsly multiple independet task sets
+    // cross instances, may run simulatinounsly multiple independent task sets
     static final RecursiveThreadExecutor threadsHolder = new RecursiveThreadExecutor(4);
 
-    // synchronized flag for proper taks inerrupteon. per tasks group flag.
+    // synchronized flag for proper tasks interruption. per tasks group flag.
     static AtomicBoolean interrupted = new AtomicBoolean(false);
 
     // Recursive function, which do some job, and produce more job
@@ -38,6 +38,7 @@ public class RecursiveTerminationTest {
         try {
             threadTasks.waitTermination();
         } catch (InterruptedException e) {
+            e.printStackTrace();
             Thread.currentThread().interrupt();
         }
 

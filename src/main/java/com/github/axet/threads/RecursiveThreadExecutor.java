@@ -163,11 +163,11 @@ public class RecursiveThreadExecutor {
 
     boolean executeTaskFlag(Task t) throws InterruptedException {
         if (Thread.currentThread().isInterrupted())
-            throw new InterruptedException();
+            throw new InterruptedException("Current Thread Interrupted");
 
         synchronized (t) {
             if (t.interrupted())
-                return false;
+                throw new InterruptedException("Parent Task Interrupted");
             if (t.end)
                 return true;
             if (t.start) {
