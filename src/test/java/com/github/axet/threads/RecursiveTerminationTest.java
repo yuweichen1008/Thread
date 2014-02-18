@@ -1,15 +1,20 @@
 package com.github.axet.threads;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class RecursiveThreadTest {
+public class RecursiveTerminationTest {
 
     // create 4 working threads. all tasks will be distributed between.
+    // cross instances, may run simulatinounsly multiple independet task sets
     static final RecursiveThreadExecutor threadsHolder = new RecursiveThreadExecutor(4);
+
+    // synchronized flag for proper taks inerrupteon. per tasks group flag.
+    static AtomicBoolean interrupted = new AtomicBoolean(false);
 
     // Recursive function, which do some job, and produce more job
     public static int recurciveTaks(final int level, final int maxLevel) {
-        RecursiveThreadTasks threadTasks = new RecursiveThreadTasks(threadsHolder);
+        RecursiveThreadTasks threadTasks = new RecursiveThreadTasks(threadsHolder, interrupted);
 
         final AtomicInteger r = new AtomicInteger(0);
 
@@ -21,12 +26,8 @@ public class RecursiveThreadTest {
             threadTasks.execute(new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        Thread.sleep(10);
+                    for (int k = 0; k < 10000; k++)
                         r.incrementAndGet();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
 
                     // create depened tasks which should ends before current
                     // task, which can also create another tasks
@@ -44,7 +45,23 @@ public class RecursiveThreadTest {
     }
 
     public static void main(String[] args) {
-        int result = recurciveTaks(0, 5);
-        System.out.println(result);
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int result = recurciveTaks(0, 5);
+                System.out.println(result);
+            }
+        }, "Main Thread");
+        t.start();
+        try {
+            t.join(5000);
+            if (t.isAlive()) {
+                t.interrupt();
+                t.join();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        // threadsHolder.close();
     }
 }
