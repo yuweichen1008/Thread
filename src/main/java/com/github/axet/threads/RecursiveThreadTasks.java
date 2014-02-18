@@ -13,12 +13,12 @@ public class RecursiveThreadTasks {
 
     AtomicBoolean interrupted;
 
-    protected RecursiveThreadTasks(RecursiveThreadExecutor e) {
+    public RecursiveThreadTasks(RecursiveThreadExecutor e) {
         this.es = e;
         interrupted = new AtomicBoolean(false);
     }
 
-    protected RecursiveThreadTasks(RecursiveThreadExecutor e, AtomicBoolean interrupted) {
+    public RecursiveThreadTasks(RecursiveThreadExecutor e, AtomicBoolean interrupted) {
         this.es = e;
         this.interrupted = interrupted;
     }
