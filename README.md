@@ -98,6 +98,6 @@ Threads utils
 
     <dependency>
       <groupId>com.github.axet</groupId>
-      <artifactId>wget</artifactId>
-      <version>1.2.9</version>
+      <artifactId>threads</artifactId>
+      <version>0.0.9</version>
     </dependency>
