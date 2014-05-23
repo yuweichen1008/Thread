@@ -4,6 +4,8 @@ Threads utils
 
 # Examples LimitThreadPool
 
+![threads](/docs/limitthreadpool.png)
+
     package com.github.axet.threads;
     
     import java.util.concurrent.atomic.AtomicInteger;
