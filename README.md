@@ -4,7 +4,13 @@ Threads utils
 
 # Examples LimitThreadPool
 
-![threads](/docs/limitthreadpool.png)
+When you have limited, independent tasks, and you have limited amount of threads and you want to control when all jobs done use LimitThreadPool
+
+  * limited number of tasks
+  * tasks are independend and can be processed parallelry
+  * need to know when all tasks done
+
+![threads](/docs/LimitThreadPool.png)
 
     package com.github.axet.threads;
     
@@ -47,6 +53,14 @@ Threads utils
     }
     
 # Example Recursive Thread Pool
+
+When you do not know how many tasks here, and tasks can produce dependend tasks, and you have limited threads use RecursiveThreadPool.
+
+  * tasks which produce another tasks and here is no way you can make it linear or independent
+  * limited threads to process jobs
+  * some tasks indepeneded and can be processed parralely
+
+![threads](/docs/RecursiveThreadPool.png)
 
     package com.github.axet.threads;
     
