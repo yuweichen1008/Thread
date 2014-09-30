@@ -6,7 +6,7 @@ import java.util.List;
 public class RecursiveThreadExecutor {
 
     public static class Task implements Runnable {
-        Exception e;
+        Throwable e;
         Runnable r;
 
         boolean start = false;
@@ -40,6 +40,9 @@ public class RecursiveThreadExecutor {
                     t = waitForNewTask();
                     if (t != null)
                         executeTaskFlag(t);
+                } catch (Error e) {
+                    if (t != null)
+                        t.e = e;
                 } catch (RuntimeException e) {
                     if (t != null)
                         t.e = e;
