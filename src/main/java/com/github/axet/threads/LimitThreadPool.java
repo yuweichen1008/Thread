@@ -85,7 +85,7 @@ public class LimitThreadPool extends ThreadPoolExecutor {
     }
 
     /**
-     * downloader working if here any getTasks() > 0
+     * downloader working if here any "getTasks() more than 0"
      */
     public boolean active() {
         synchronized (lock) {
