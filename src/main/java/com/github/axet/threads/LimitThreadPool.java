@@ -63,8 +63,11 @@ public class LimitThreadPool extends ThreadPoolExecutor {
         }
     }
 
+    // new ArrayBlockingQueue<Runnable>(1)
+    // new SynchronousQueue()<Runnable>()
+
     public LimitThreadPool(int maxThreadCount) {
-        super(0, maxThreadCount, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(1), new BlockUntilFree());
+        super(0, maxThreadCount, 0, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), new BlockUntilFree());
     }
 
     protected void beforeExecute(Thread t, Runnable r) {
