@@ -85,6 +85,7 @@ public class RecursiveThreadTest {
             threadTasks.execute(new Runnable() {
                 @Override
                 public void run() {
+                    // do work
                     try {
                         Thread.sleep(10);
                         r.incrementAndGet();
@@ -98,6 +99,7 @@ public class RecursiveThreadTest {
                 }
             });
         }
+        // wait thread tasks and its dependencies
         try {
             threadTasks.waitTermination();
         } catch (InterruptedException e) {
@@ -120,6 +122,6 @@ public class RecursiveThreadTest {
 <dependency>
   <groupId>com.github.axet</groupId>
   <artifactId>threads</artifactId>
-  <version>0.0.9</version>
+  <version>0.0.12</version>
 </dependency>
 ```
