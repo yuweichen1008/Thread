@@ -1,23 +1,23 @@
 package com.github.axet.threads;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
  * 
- * SynchronousQueue - hung while running. Seems like a bug in java (Max OSX Java
- * 1.7.0-25)
+ * SynchronousQueue - hung while running. Seems like a bug in java (Max OSX Java 1.7.0-25)
  * 
- * Unsafe.park(boolean, long) line: not available [native method] [local
- * variables unavailable]
+ * Unsafe.park(boolean, long) line: not available [native method] [local variables unavailable]
  * 
  * LockSupport.park(Object) line: 186
  * 
- * SynchronousQueue$TransferStack.awaitFulfill(
- * SynchronousQueue$TransferStack$SNode, boolean, long) line: 458
+ * SynchronousQueue$TransferStack.awaitFulfill( SynchronousQueue$TransferStack$SNode, boolean, long) line: 458
  * 
  * 
  * @author axet
@@ -26,6 +26,8 @@ import java.util.concurrent.TimeUnit;
 public class LimitThreadPool extends ThreadPoolExecutor {
     Object lock = new Object();
     int count = 0;
+
+    List<Thread> threads = new LinkedList<Thread>();
 
     protected static class BlockUntilFree implements RejectedExecutionHandler {
         @Override
@@ -68,6 +70,15 @@ public class LimitThreadPool extends ThreadPoolExecutor {
 
     public LimitThreadPool(int maxThreadCount) {
         super(0, maxThreadCount, 0, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), new BlockUntilFree());
+
+        setThreadFactory(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r, LimitThreadPool.class.getSimpleName() + " - " + threads.size());
+                threads.add(t);
+                return t;
+            }
+        });
     }
 
     protected void beforeExecute(Thread t, Runnable r) {
@@ -121,8 +132,7 @@ public class LimitThreadPool extends ThreadPoolExecutor {
     }
 
     /**
-     * You should not call this method on this Limited Version Thread Pool. Use
-     * blockExecute() instead.
+     * You should not call this method on this Limited Version Thread Pool. Use blockExecute() instead.
      */
     @Override
     public void execute(Runnable command) {
@@ -138,7 +148,26 @@ public class LimitThreadPool extends ThreadPoolExecutor {
 
         execute(new SafetyCheck(command));
 
+        // we are converting thread interrupted flag into exception
         if (Thread.interrupted())
             throw new InterruptedException();
+    }
+
+    /**
+     * Interrupt all child threads.
+     */
+    public void interrupt() {
+        shutdownNow();
+    }
+
+    /**
+     * wait for all child threads to exit. called after .interrupt()
+     * 
+     * @throws InterruptedException
+     */
+    public void join() throws InterruptedException {
+        for (Thread t : threads) {
+            t.join();
+        }
     }
 }
