@@ -170,4 +170,14 @@ public class LimitThreadPool extends ThreadPoolExecutor {
             t.join();
         }
     }
+
+    /**
+     * close and wait for threads to exit.
+     * 
+     * @throws InterruptedException
+     */
+    public void close() throws InterruptedException {
+        interrupt();
+        join();
+    }
 }

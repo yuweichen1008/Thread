@@ -21,7 +21,12 @@ public class RecursiveStaticExecutor {
         if (counter.decrementAndGet() == 0) {
             synchronized (counter) {
                 if (es != null) {
-                    es.close();
+                    try {
+                        es.close();
+                    } catch (InterruptedException e) {
+                        // we do not need to wait, keep interrupted
+                        Thread.currentThread().interrupt();
+                    }
                     es = null;
                 }
             }
