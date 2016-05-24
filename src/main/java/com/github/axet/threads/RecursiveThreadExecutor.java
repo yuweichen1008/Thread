@@ -76,7 +76,7 @@ public class RecursiveThreadExecutor {
         maxThreads = Runtime.getRuntime().availableProcessors();
     }
 
-    public void close() {
+    public void interrupt() {
         synchronized (tasks) {
             maxThreads = 0;
 
@@ -84,15 +84,18 @@ public class RecursiveThreadExecutor {
                 j.interrupt();
             }
         }
+    }
 
+    public void join() throws InterruptedException {
         for (Job j : threads) {
-            try {
-                j.join();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+            j.join();
         }
         threads.clear();
+    }
+
+    public void close() throws InterruptedException {
+        interrupt();
+        join();
     }
 
     public void execute(Task t) {
