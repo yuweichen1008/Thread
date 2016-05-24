@@ -122,6 +122,6 @@ public class RecursiveThreadTest {
 <dependency>
   <groupId>com.github.axet</groupId>
   <artifactId>threads</artifactId>
-  <version>0.0.12</version>
+  <version>0.0.13</version>
 </dependency>
 ```
